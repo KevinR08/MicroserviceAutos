@@ -20,10 +20,10 @@ jobs:
           password: Kevincraft54
 
       - name: Build Docker image
-        run: docker build -t KevinR08/microservicioautos .
+        run: docker build -t kevinr08/microservicioautos .
 
       - name: Push Docker image to Docker Hub
-        run: docker push KevinR08/microservicioautos
+        run: docker push kevinr08/microservicioautos
 
       - name: Deploy to Vercels
         uses: amondnet/vercel-action@v25
