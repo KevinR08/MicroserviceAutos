@@ -1,4 +1,4 @@
-name: CI/CD with Docker and Vercel
+name: CI/CD with Docker and VerceL
 
 on:
   push:
