@@ -177,9 +177,22 @@ app.put('/api/update/car/:idCar', isAuthenticated, async (req, res) => {
     }
   })
 
-  
-
-
+  app.post('/upload', upload.single('file'), async (req, res) => {
+    try {
+      const file = req.file
+      if (!file) {
+        return res.status(400).send('No se ha proporcionado un archivo.');
+      }
+      const storageRef = ref(firebaseStorage, `/files/${file.originalname}`);
+      const uploadTask = await uploadBytesResumable( storageRef, file.buffer );
+      const downloadURL = await getDownloadURL(uploadTask.ref);
+      console.log("downloadURL:", downloadURL);
+      return res.status(200).send({url: downloadURL});
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error al subir el archivo.');
+    }
+  });
 
   // Inicio del servidor
 const PORT = process.env.PORT || 3001
