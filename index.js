@@ -177,7 +177,7 @@ app.put('/api/update/car/:idCar', isAuthenticated, async (req, res) => {
     }
   })
 
-  app.post('/upload', upload.single('file'), async (req, res) => {
+  app.post('/api/read/upload', upload.single('file'), async (req, res) => {
     try {
       const file = req.file
       if (!file) {
