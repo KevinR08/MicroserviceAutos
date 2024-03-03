@@ -38,6 +38,25 @@ app.get('/api/item/:slug', (req, res) => {
   res.end(`Item: ${slug}`)
 })
 
+// Buscar autos por título
+app.get('/api/search/cars', async (req, res) => {
+    try {
+        const carsCol = collection(db, 'cars')
+        const carSnapshot = await getDocs(carsCol)
+        const carsList = []
+        carSnapshot.forEach((doc) => {
+          carsList.push({
+            id: doc.id,
+            ...doc.data()
+          })
+        })
+        res.status(200).json(carsList)
+      } catch (error) {
+        console.error('No se pudieron obtener los autos', error)
+        res.status(500).json({ error: 'Error al cargar los autos' })
+      }
+  })
+
 
 // Mostrar los autos
 app.get('/api/read/cars', async (req, res) => {
@@ -80,24 +99,7 @@ app.get('/api/read/cars/:limit', async (req, res) => {
   })
 
 
-// Buscar autos por título
-app.get('/api/search/cars', async (req, res) => {
-    try {
-        const carsCol = collection(db, 'cars')
-        const carSnapshot = await getDocs(carsCol)
-        const carsList = []
-        carSnapshot.forEach((doc) => {
-          carsList.push({
-            id: doc.id,
-            ...doc.data()
-          })
-        })
-        res.status(200).json(carsList)
-      } catch (error) {
-        console.error('No se pudieron obtener los autos', error)
-        res.status(500).json({ error: 'Error al cargar los autos' })
-      }
-  })
+
 
 //Ruta para mostrar autos por usuario
   app.get('/api/read/car/auth/:userID', isAuthenticated, async (req, res) => {
