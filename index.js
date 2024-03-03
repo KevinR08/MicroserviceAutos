@@ -41,21 +41,25 @@ app.get('/api/item/:slug', (req, res) => {
 // Buscar autos por título
 app.get('/api/search/cars', async (req, res) => {
     try {
+        const searchText = req.query.brand.toLowerCase() 
         const carsCol = collection(db, 'cars')
-        const carSnapshot = await getDocs(carsCol)
-        const carsList = []
-        carSnapshot.forEach((doc) => {
-          carsList.push({
-            id: doc.id,
-            ...doc.data()
-          })
+        const querySnapshot = await getDocs(carsCol)
+        const matchCars = []
+        querySnapshot.forEach((doc) => {
+          const title = doc.data().brand.toLowerCase()
+          if (title.includes(searchText)) {
+            // Agregar los autos que coinciden a la lista
+            matchCars.push({ id: doc.id, ...doc.data() })
+          }
         })
         res.setHeader('Access-Control-Allow-Origin', '*');
-        res.status(200).json(carsList)
+        res.status(200).json(matchCars)
       } catch (error) {
-        console.error('No se pudieron obtener los autos', error)
-        res.status(500).json({ error: 'Error al cargar los autos' })
+        console.error('No se ha encontrado el auto', error)
+        res.status(500).json({ error: 'No se ha encontrado el auto', errorFire: error })
       }
+       
+      
   })
 
 
