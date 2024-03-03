@@ -50,6 +50,7 @@ app.get('/api/search/cars', async (req, res) => {
             ...doc.data()
           })
         })
+        res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(200).json(carsList)
       } catch (error) {
         console.error('No se pudieron obtener los autos', error)
@@ -187,6 +188,7 @@ app.put('/api/update/car/:idCar', isAuthenticated, async (req, res) => {
       const uploadTask = await uploadBytesResumable( storageRef, file.buffer );
       const downloadURL = await getDownloadURL(uploadTask.ref);
       console.log("downloadURL:", downloadURL);
+      res.setHeader('Access-Control-Allow-Origin', '*');
       return res.status(200).send({url: downloadURL});
     } catch (error) {
       console.error(error);
