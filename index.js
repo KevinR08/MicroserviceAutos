@@ -101,6 +101,82 @@ app.get('/api/search/cars', async (req, res) => {
     }
   })
 
+//Ruta para mostrar autos por usuario
+  app.get('/api/read/car/auth/:userID', isAuthenticated, async (req, res) => {
+    try {
+      const userID = req.params.userID
+      console.log(userID)
+      const carsCol = collection(db, 'cars')
+      const querySnapshot = await getDocs(query(carsCol, where('userID', '==', userID)))
+      const carsList = []
+      querySnapshot.forEach((doc) => {
+        carsList.push({
+          id: doc.id,
+          ...doc.data()
+        })
+      })
+      res.status(200).json(carsList)
+    } catch (error) {
+      console.error('Error al mostrar sus autos creados', error)
+      res.status(500).json({ error: 'Error al mostrar sus autos creados' })
+    }
+  })
+
+  // Ruta para eliminar un auto
+app.delete('/api/delete/car/:idCar' , isAuthenticated, async (req, res) => {
+    try {
+      const idCar = req.params.idCar
+      // Verifica si el libro existe antes de eliminarlo
+      const carsCol = doc(db, 'cars', idCar)
+      const carDoc = await getDoc(carsCol
+  )
+      if (!carDoc.exists()) {
+        return res.status(404).json({ error: 'El auto no existe' })
+      }
+      await deleteDoc(carsCol
+  )
+      res.status(200).json({ message: 'Auto eliminado exitosamente' })
+    } catch (error) {
+      console.error('Error al eliminar el auto:', error)
+      res.status(500).json({ error: 'Error al eliminar el auto', errorFire: error })
+    }
+  })
+
+  //Crear un auto
+app.post('/api/create/car', isAuthenticated, async (req, res) => {
+    try {
+      const carData = req.body
+      console.log(carData)
+      const newcarsCol = await addDoc(collection(db,'cars'), carData)
+      res.status(201).json({ message: 'Auto creado exitosamente', idCar: newcarsCol.id })
+    } catch (error) {
+      // No se pudo crear el libro
+      console.error('Error al crear el auto:', error)
+      res.status(500).json({ error: 'Eror al crear el auto',errorFire:error })
+    }
+  })
+
+
+  // Ruta para actualizar un auto
+app.put('/api/update/car/:idCar', isAuthenticated, async (req, res) => {
+    try {
+      const idCar = req.params.idCar
+      const updatedData = req.body
+      // Verifica si el auto existe antes de actualizarlo
+      const carsCol = doc(db, 'cars', idCar)
+      const carDoc = await getDoc(carsCol)
+      if (!carDoc.exists()) {
+        return res.status(404).json({ error: 'El auto no existe' })
+      }
+      // Actualiza los datos del auto en la base de datos
+      await updateDoc(carsCol, updatedData) 
+      res.status(200).json({ message: 'Auto actualizado exitosamente' })
+    } catch (error) {
+      console.error('Error al actualizar el auto:', error)
+      res.status(500).json({ error: 'Error al actualizar el auto', errorFire: error })
+    }
+  })
+
   
 
 
