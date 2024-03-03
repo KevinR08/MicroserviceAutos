@@ -80,25 +80,24 @@ app.get('/api/read/cars/:limit', async (req, res) => {
   })
 
 
-
-// Mostrar auto por ID
-app.get('/api/read/car/:carId', async (req, res) => {
+// Buscar autos por título
+app.get('/api/search/cars', async (req, res) => {
     try {
-      const carId = req.params.carId; 
-      const carsCol = doc(db, 'cars', carId)
-      const carDoc = await getDoc(carsCol)
-      if (carDoc.exists()) {
-        const carData = {
-          id: carDoc.id,
-          ...carDoc.data()
+      const searchText = req.query.brand.toLowerCase() 
+      const carsCol = collection(db, 'cars')
+      const querySnapshot = await getDocs(carsCol)
+      const matchCars = []
+      querySnapshot.forEach((doc) => {
+        const title = doc.data().brand.toLowerCase()
+        if (title.includes(searchText)) {
+          // Agregar los autos que coinciden a la lista
+          matchCars.push({ id: doc.id, ...doc.data() })
         }
-        res.status(200).json(carData)
-      } else {
-        res.status(404).json({ error: 'El auto no ha sido encontrado' })
-      }
+      })
+      res.status(200).json(matchCars)
     } catch (error) {
-      console.error('Error al mostrar auto', error)
-      res.status(500).json({ error: 'Error al mostrar auto' })
+      console.error('No se ha encontrado el auto', error)
+      res.status(500).json({ error: 'No se ha encontrado el auto', errorFire: error })
     }
   })
 
