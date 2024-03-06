@@ -161,7 +161,6 @@ app.post('/api/create/car', isAuthenticated, async (req, res) => {
     }
   })
 
-
   // Ruta para actualizar un auto
 app.put('/api/update/car/:idCar', isAuthenticated, async (req, res) => {
     try {
