@@ -103,7 +103,26 @@ app.get('/api/read/cars/:limit', async (req, res) => {
     }
   })
 
-
+// Mostrar auto por ID
+app.get('/api/read/car/:carId', async (req, res) => {
+  try {
+    const carId = req.params.carId; 
+    const carsCol = doc(db, 'cars', carId)
+    const carDoc = await getDoc(carsCol)
+    if (carDoc.exists()) {
+      const carData = {
+        id: carDoc.id,
+        ...carDoc.data()
+      }
+      res.status(200).json(carData)
+    } else {
+      res.status(404).json({ error: 'El auto no ha sido encontrado' })
+    }
+  } catch (error) {
+    console.error('Error al mostrar auto', error)
+    res.status(500).json({ error: 'Error al mostrar auto' })
+  }
+})
 
 
 //Ruta para mostrar autos por usuario
@@ -174,6 +193,7 @@ app.put('/api/update/car/:idCar', isAuthenticated, async (req, res) => {
       }
       // Actualiza los datos del auto en la base de datos
       await updateDoc(carsCol, updatedData) 
+      res.setHeader('Access-Control-Allow-Origin', '*');
       res.status(200).json({ message: 'Auto actualizado exitosamente' })
     } catch (error) {
       console.error('Error al actualizar el auto:', error)
@@ -200,7 +220,7 @@ app.put('/api/update/car/:idCar', isAuthenticated, async (req, res) => {
   });
 
   // Inicio del servidor
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
   console.log(`Servidor iniciado en el puerto ${PORT}`)
 })
